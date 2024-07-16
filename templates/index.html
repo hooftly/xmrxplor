@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monero Block Info</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Monero Block Info</h1>
+        <div id="blockCountResult" class="result loading">Loading block count...</div>
+        <div id="lastBlockInfoResult" class="result loading">Loading last block info...</div>
+        <div id="averageBlockTimeResult" class="result loading">Loading average block time...</div>
+    </div>
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
