@@ -114,5 +114,20 @@ def transaction(tx_hash):
     
     return render_template('transaction.html', transaction=transaction_info)
 
+@app.route('/get_connections')
+def get_connections():
+    url = 'http://144.91.120.100:18081/get_connections'
+    headers = {'Content-Type': 'application/json'}
+    response = requests.post(url, headers=headers)
+    connections_data = response.json()
+
+    incoming_connections = len([conn for conn in connections_data.get('connections', []) if conn.get('in', False)])
+    outgoing_connections = len([conn for conn in connections_data.get('connections', []) if not conn.get('in', False)])
+    
+    return jsonify({
+        "incoming_connections": incoming_connections,
+        "outgoing_connections": outgoing_connections
+    })
+
 if __name__ == '__main__':
     app.run(debug=True)
