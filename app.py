@@ -98,14 +98,18 @@ def transaction(tx_hash):
             'target': {'key': vout['target']['tagged_key'].get('key', 'N/A')}
         })
     
+    rct_signatures = tx_details.get('rct_signatures', {})
+    formatted_fee = rct_signatures.get('txnFee', 0) / 10**12
+    
     transaction_info = {
         'tx_hash': tx_data['txs'][0].get('tx_hash', 'N/A'),
         'block_height': tx_data['txs'][0].get('block_height', 'N/A'),
         'timestamp': tx_data['txs'][0].get('block_timestamp', 'N/A'),
         'vin': vin_details,
         'vout': vout_details,
-        'rct_signatures': tx_details.get('rct_signatures', {}),
-        'ring_size': ring_size
+        'rct_signatures': rct_signatures,
+        'ring_size': ring_size,
+        'formatted_fee': f"{formatted_fee:.12f} XMR"  # Format the fee with 12 decimal places and add "XMR"
     }
     
     return render_template('transaction.html', transaction=transaction_info)
