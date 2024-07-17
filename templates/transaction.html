@@ -18,31 +18,31 @@
         <h1>Transaction Details</h1>
         <div class="transaction-details">
             <h2>Transaction Hash</h2>
-            <p>{{ transaction.tx_hash }}</p>
+            <p>{{ transaction.hash }}</p>
 
-            <h2>Block Height</h2>
-            <p>{{ transaction.block_height }}</p>
+            <h2>Version</h2>
+            <p>{{ transaction.version }}</p>
 
-            <h2>Timestamp</h2>
-            <p>{{ transaction.timestamp }}</p>
+            <h2>Unlock Time</h2>
+            <p>{{ transaction.unlock_time }}</p>
 
             <h2>Inputs</h2>
             <ul>
                 {% for input in transaction.vin %}
-                    <li>Amount: {{ input.amount }} - Key Image: {{ input.key_image }}</li>
+                    <li>Amount: {{ input.key.amount }} - Key Image: {{ input.key.k_image }}</li>
                 {% endfor %}
             </ul>
 
             <h2>Outputs</h2>
             <ul>
                 {% for output in transaction.vout %}
-                    <li>Amount: {{ output.amount }} - Public Key: {{ output.target.key }}</li>
+                    <li>Amount: {{ output.amount }} - Public Key: {{ output.target.tagged_key.key }}</li>
                 {% endfor %}
             </ul>
 
             <h2>Other Information</h2>
-            <p>Fee: {{ transaction.formatted_fee }}</p>
-            <p>Ring Size: {{ transaction.ring_size }}</p>
+            <p>Fee: {{ "%.12f" | format(transaction.rct_signatures.txnFee / 1e12) }} XMR</p>
+            <p>Ring Size: {{ transaction.vin[0].key.key_offsets | length }}</p>
         </div>
     </div>
 </body>
