@@ -67,4 +67,14 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Set up an interval to refresh the data every 25 seconds
     setInterval(fetchAllData, 25000);
+
+    // Add event listener for search form
+    const searchForm = document.getElementById('searchForm');
+    searchForm.addEventListener('submit', function(event) {
+        event.preventDefault();
+        const searchInput = document.getElementById('searchInput').value.trim();
+        if (searchInput) {
+            window.location.href = `/transaction/${searchInput}`;
+        }
+    });
 });

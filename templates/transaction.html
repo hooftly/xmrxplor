@@ -8,7 +8,11 @@
 </head>
 <body>
     <nav class="navbar">
-        <div class="navbar-brand">XMRXPLOR</div>
+        <div class="navbar-brand"><a href="{{ url_for('index') }}" style="color: white; text-decoration: none;">XMRXPLOR</a></div>
+        <form id="searchForm" class="search-form">
+            <input type="text" id="searchInput" placeholder="Enter Transaction Hash">
+            <button type="submit">Search</button>
+        </form>
     </nav>
     <div class="container">
         <h1>Transaction Details</h1>
