@@ -2,6 +2,7 @@ from flask import Flask, jsonify, render_template, request, abort
 import requests
 import json
 import time
+from concurrent.futures import ThreadPoolExecutor
 
 app = Flask(__name__)
 
@@ -28,6 +29,22 @@ def fetch_transaction(tx_hash):
     response = requests.post(url, headers=headers, data=json.dumps(payload))
     return response.json()
 
+def fetch_transaction_details(tx_hash):
+    tx_data = fetch_transaction(tx_hash)
+    if 'txs' in tx_data:
+        tx_details = json.loads(tx_data['txs'][0]['as_json'])
+        timestamp = tx_data['txs'][0].get('block_timestamp', 'N/A')
+        rct_signatures = tx_details.get('rct_signatures', {})
+        fee = rct_signatures.get('txnFee', 0) / 10**12
+        size = len(tx_data['txs'][0]['as_hex']) // 2  # Size in bytes
+        return {
+            "tx_hash": tx_hash,
+            "timestamp": timestamp,
+            "fee": fee,
+            "size": size
+        }
+    return None
+
 @app.route('/')
 def index():
     return render_template('index.html')
@@ -49,13 +66,15 @@ def get_last_block_info():
     block_time = block_header['timestamp']
     time_since_last_block = current_time - block_time
     
-    num_transactions = len(block_json['tx_hashes'])
+    with ThreadPoolExecutor() as executor:
+        transactions = list(executor.map(fetch_transaction_details, block_json['tx_hashes']))
+        transactions = [tx for tx in transactions if tx is not None]
     
     return jsonify({
         "block_count": block_count + 1,
         "time_since_last_block": time_since_last_block,
-        "num_transactions": num_transactions,
-        "tx_hashes": block_json['tx_hashes']
+        "num_transactions": len(transactions),
+        "transactions": transactions
     })
 
 @app.route('/get_block/<int:height>')

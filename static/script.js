@@ -23,37 +23,52 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(data => {
                 const timeSinceLastBlockCard = document.getElementById('timeSinceLastBlockCard');
                 const numTransactionsCard = document.getElementById('numTransactionsCard');
-                const transactionHashesResult = document.getElementById('transactionHashesResult');
-                
+                const transactionTableBody = document.getElementById('transactionTable').querySelector('tbody');
+
                 if (data.block_count) {
                     timeSinceLastBlockCard.innerText = `Time Since Last Block: ${data.time_since_last_block}s`;
                     numTransactionsCard.innerText = `Transactions in Last Block: ${data.num_transactions}`;
-                    transactionHashesResult.innerHTML = '';
-                    data.tx_hashes.forEach(tx => {
-                        const txDiv = document.createElement('div');
+                    transactionTableBody.innerHTML = '';
+                    data.transactions.forEach(tx => {
+                        const txRow = document.createElement('tr');
+                        
+                        const txHashCell = document.createElement('td');
                         const txLink = document.createElement('a');
-                        txLink.href = `/transaction/${tx}`;
-                        txLink.innerText = tx;
-                        txDiv.appendChild(txLink);
-                        transactionHashesResult.appendChild(txDiv);
+                        txLink.href = `/transaction/${tx.tx_hash}`;
+                        txLink.innerText = tx.tx_hash;
+                        txHashCell.appendChild(txLink);
+                        
+                        const timestampCell = document.createElement('td');
+                        timestampCell.innerText = new Date(tx.timestamp * 1000).toLocaleString();
+
+                        const feeCell = document.createElement('td');
+                        feeCell.innerText = tx.fee.toFixed(12);
+
+                        const sizeCell = document.createElement('td');
+                        sizeCell.innerText = tx.size;
+
+                        txRow.appendChild(txHashCell);
+                        txRow.appendChild(timestampCell);
+                        txRow.appendChild(feeCell);
+                        txRow.appendChild(sizeCell);
+                        
+                        transactionTableBody.appendChild(txRow);
                     });
                 } else {
                     timeSinceLastBlockCard.innerText = 'Time Since Last Block: Error';
                     numTransactionsCard.innerText = 'Transactions in Last Block: Error';
-                    transactionHashesResult.innerText = 'Error loading transaction hashes';
+                    transactionTableBody.innerHTML = '<tr><td colspan="4">Error loading transaction hashes</td></tr>';
                 }
-                transactionHashesResult.classList.remove('loading');
             })
             .catch(error => {
                 console.error('Error:', error);
                 const timeSinceLastBlockCard = document.getElementById('timeSinceLastBlockCard');
                 const numTransactionsCard = document.getElementById('numTransactionsCard');
-                const transactionHashesResult = document.getElementById('transactionHashesResult');
+                const transactionTableBody = document.getElementById('transactionTable').querySelector('tbody');
 
                 timeSinceLastBlockCard.innerText = 'Time Since Last Block: Error';
                 numTransactionsCard.innerText = 'Transactions in Last Block: Error';
-                transactionHashesResult.innerText = 'Error loading transaction hashes';
-                transactionHashesResult.classList.remove('loading');
+                transactionTableBody.innerHTML = '<tr><td colspan="4">Error loading transaction hashes</td></tr>';
             });
     }
 

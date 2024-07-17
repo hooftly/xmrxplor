@@ -21,7 +21,24 @@
             <div id="numTransactionsCard" class="info-card">Transactions in Last Block: Loading...</div>
         </div>
         <h1>Transaction Hashes in the Most Recent Block</h1>
-        <div id="transactionHashesResult" class="result loading">Loading transaction hashes...</div>
+        <div id="transactionTableContainer" class="table-container">
+            <h2>Transaction Hashes</h2>
+            <div class="table-wrapper">
+                <table id="transactionTable">
+                    <thead>
+                        <tr>
+                            <th>Transaction Hash</th>
+                            <th>Timestamp</th>
+                            <th>Fee (XMR)</th>
+                            <th>Size (bytes)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Transaction hashes will be populated here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
     <script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>

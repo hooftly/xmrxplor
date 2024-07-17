@@ -76,47 +76,30 @@ h1 {
     margin-top: 10px;
 }
 
-.result {
+.table-container {
     margin-top: 20px;
-    font-size: 16px;
-    color: #333;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    background-color: #fafafa;
+}
+
+.table-wrapper {
     max-height: 400px;
     overflow-y: auto;
 }
 
-.loading {
-    font-size: 16px;
-    color: #777;
-}
-
-.transaction-details {
-    margin-top: 20px;
-}
-
-.transaction-details h2 {
-    color: #333;
+table {
+    width: 100%;
+    border-collapse: collapse;
     margin-top: 10px;
 }
 
-.transaction-details p, .transaction-details ul {
-    font-size: 16px;
-    color: #333;
-    margin-bottom: 10px;
-}
-
-.transaction-details ul {
-    list-style-type: none;
-    padding-left: 0;
-}
-
-.transaction-details ul li {
-    background: #fafafa;
+table, th, td {
     border: 1px solid #ccc;
-    border-radius: 5px;
+}
+
+th, td {
     padding: 10px;
-    margin-bottom: 5px;
+    text-align: left;
+}
+
+th {
+    background-color: #f2f2f2;
 }
