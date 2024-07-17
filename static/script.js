@@ -17,64 +17,89 @@ document.addEventListener('DOMContentLoaded', function() {
             });
     }
 
-    function fetchLastBlockInfo() {
-        return fetch('/get_last_block_info')
+    function fetchTransactionPool() {
+        return fetch('/get_transaction_pool_info')
             .then(response => response.json())
             .then(data => {
-                const timeSinceLastBlockCard = document.getElementById('timeSinceLastBlockCard');
-                const numTransactionsCard = document.getElementById('numTransactionsCard');
                 const transactionTableBody = document.getElementById('transactionTable').querySelector('tbody');
-
-                if (data.block_count) {
-                    timeSinceLastBlockCard.innerText = `Time Since Last Block: ${data.time_since_last_block}s`;
-                    numTransactionsCard.innerText = `Transactions in Last Block: ${data.num_transactions}`;
-                    transactionTableBody.innerHTML = '';
-                    data.transactions.forEach(tx => {
-                        const txRow = document.createElement('tr');
-                        
-                        const txHashCell = document.createElement('td');
-                        const txLink = document.createElement('a');
-                        txLink.href = `/transaction/${tx.tx_hash}`;
-                        txLink.innerText = tx.tx_hash;
-                        txHashCell.appendChild(txLink);
-                        
-                        const timestampCell = document.createElement('td');
+                transactionTableBody.innerHTML = '';
+                data.transactions.forEach(tx => {
+                    const txRow = document.createElement('tr');
+                    
+                    const txHashCell = document.createElement('td');
+                    const txLink = document.createElement('a');
+                    txLink.href = `/transaction/${tx.tx_hash}`;
+                    txLink.innerText = tx.tx_hash;
+                    txHashCell.appendChild(txLink);
+                    
+                    const timestampCell = document.createElement('td');
+                    if (tx.timestamp !== 'N/A') {
                         timestampCell.innerText = new Date(tx.timestamp * 1000).toLocaleString();
+                    } else {
+                        timestampCell.innerText = 'N/A';
+                    }
 
-                        const feeCell = document.createElement('td');
-                        feeCell.innerText = tx.fee.toFixed(12);
+                    const feeCell = document.createElement('td');
+                    feeCell.innerText = tx.fee.toFixed(12);
 
-                        const sizeCell = document.createElement('td');
-                        sizeCell.innerText = tx.size;
+                    const sizeCell = document.createElement('td');
+                    sizeCell.innerText = tx.size;
 
-                        txRow.appendChild(txHashCell);
-                        txRow.appendChild(timestampCell);
-                        txRow.appendChild(feeCell);
-                        txRow.appendChild(sizeCell);
-                        
-                        transactionTableBody.appendChild(txRow);
-                    });
-                } else {
-                    timeSinceLastBlockCard.innerText = 'Time Since Last Block: Error';
-                    numTransactionsCard.innerText = 'Transactions in Last Block: Error';
-                    transactionTableBody.innerHTML = '<tr><td colspan="4">Error loading transaction hashes</td></tr>';
-                }
+                    txRow.appendChild(txHashCell);
+                    txRow.appendChild(timestampCell);
+                    txRow.appendChild(feeCell);
+                    txRow.appendChild(sizeCell);
+                    
+                    transactionTableBody.appendChild(txRow);
+                });
             })
             .catch(error => {
                 console.error('Error:', error);
-                const timeSinceLastBlockCard = document.getElementById('timeSinceLastBlockCard');
-                const numTransactionsCard = document.getElementById('numTransactionsCard');
                 const transactionTableBody = document.getElementById('transactionTable').querySelector('tbody');
+                transactionTableBody.innerHTML = '<tr><td colspan="4">Error loading transaction pool</td></tr>';
+            });
+    }
 
-                timeSinceLastBlockCard.innerText = 'Time Since Last Block: Error';
-                numTransactionsCard.innerText = 'Transactions in Last Block: Error';
-                transactionTableBody.innerHTML = '<tr><td colspan="4">Error loading transaction hashes</td></tr>';
+    function fetchLatestBlocks() {
+        return fetch('/get_latest_blocks')
+            .then(response => response.json())
+            .then(data => {
+                const blocksTableBody = document.getElementById('blocksTable').querySelector('tbody');
+                blocksTableBody.innerHTML = '';
+                data.blocks.forEach(block => {
+                    const blockRow = document.createElement('tr');
+
+                    const heightCell = document.createElement('td');
+                    heightCell.innerText = block.height;
+
+                    const timestampCell = document.createElement('td');
+                    timestampCell.innerText = new Date(block.timestamp * 1000).toLocaleString();
+
+                    const sizeCell = document.createElement('td');
+                    sizeCell.innerText = block.block_size;
+
+                    const txCountCell = document.createElement('td');
+                    txCountCell.innerText = block.num_txes;
+
+                    blockRow.appendChild(heightCell);
+                    blockRow.appendChild(timestampCell);
+                    blockRow.appendChild(sizeCell);
+                    blockRow.appendChild(txCountCell);
+
+                    blocksTableBody.appendChild(blockRow);
+                });
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                const blocksTableBody = document.getElementById('blocksTable').querySelector('tbody');
+                blocksTableBody.innerHTML = '<tr><td colspan="4">Error loading latest blocks</td></tr>';
             });
     }
 
     function fetchAllData() {
         fetchBlockCount();
-        fetchLastBlockInfo();
+        fetchTransactionPool();
+        fetchLatestBlocks();
     }
 
     // Fetch all data when the page loads

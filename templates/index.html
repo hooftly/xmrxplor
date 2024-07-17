@@ -20,9 +20,9 @@
             <div id="timeSinceLastBlockCard" class="info-card">Time Since Last Block: Loading...</div>
             <div id="numTransactionsCard" class="info-card">Transactions in Last Block: Loading...</div>
         </div>
-        <h1>Transaction Hashes in the Most Recent Block</h1>
+        <h1>Transaction Pool</h1>
         <div id="transactionTableContainer" class="table-container">
-            <h2>Transaction Hashes</h2>
+            <h2>Transaction Pool</h2>
             <div class="table-wrapper">
                 <table id="transactionTable">
                     <thead>
@@ -34,7 +34,26 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <!-- Transaction hashes will be populated here -->
+                        <!-- Transaction pool will be populated here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <h1>Latest 10 Blocks</h1>
+        <div id="blocksTableContainer" class="table-container">
+            <h2>Recent Blocks</h2>
+            <div class="table-wrapper">
+                <table id="blocksTable">
+                    <thead>
+                        <tr>
+                            <th>Height</th>
+                            <th>Timestamp</th>
+                            <th>Size (bytes)</th>
+                            <th>Transactions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Latest blocks will be populated here -->
                     </tbody>
                 </table>
             </div>

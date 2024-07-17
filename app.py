@@ -29,21 +29,15 @@ def fetch_transaction(tx_hash):
     response = requests.post(url, headers=headers, data=json.dumps(payload))
     return response.json()
 
-def fetch_transaction_details(tx_hash):
-    tx_data = fetch_transaction(tx_hash)
-    if 'txs' in tx_data:
-        tx_details = json.loads(tx_data['txs'][0]['as_json'])
-        timestamp = tx_data['txs'][0].get('block_timestamp', 'N/A')
-        rct_signatures = tx_details.get('rct_signatures', {})
-        fee = rct_signatures.get('txnFee', 0) / 10**12
-        size = len(tx_data['txs'][0]['as_hex']) // 2  # Size in bytes
-        return {
-            "tx_hash": tx_hash,
-            "timestamp": timestamp,
-            "fee": fee,
-            "size": size
-        }
-    return None
+def fetch_transaction_pool():
+    url = 'http://144.91.120.100:18081/get_transaction_pool'
+    headers = {'Content-Type': 'application/json'}
+    response = requests.post(url, headers=headers)
+    return response.json()
+
+def fetch_block_header(height):
+    block_data = fetch_data("get_block_header_by_height", {"height": height})
+    return block_data['result']['block_header']
 
 @app.route('/')
 def index():
@@ -54,28 +48,38 @@ def get_block_count():
     data = fetch_data("get_block_count")
     return jsonify(data)
 
-@app.route('/get_last_block_info')
-def get_last_block_info():
+@app.route('/get_transaction_pool_info')
+def get_transaction_pool_info():
+    pool_data = fetch_transaction_pool()
+    transactions = []
+    for tx in pool_data['transactions']:
+        tx_details = json.loads(tx['tx_json'])
+        timestamp = tx.get('receive_time')
+        if timestamp:
+            timestamp = int(timestamp)
+        else:
+            timestamp = 'N/A'
+        rct_signatures = tx_details.get('rct_signatures', {})
+        fee = rct_signatures.get('txnFee', 0) / 10**12
+        size = len(tx['tx_blob']) // 2  # Size in bytes
+        transactions.append({
+            "tx_hash": tx['id_hash'],
+            "timestamp": timestamp,
+            "fee": fee,
+            "size": size
+        })
+    return jsonify({"transactions": transactions})
+
+@app.route('/get_latest_blocks')
+def get_latest_blocks():
     block_count_data = fetch_data("get_block_count")
-    block_count = block_count_data['result']['count'] - 1
-    block_data = fetch_data("get_block", {"height": block_count})
-    block_header = block_data['result']['block_header']
-    block_json = json.loads(block_data['result']['json'])
+    block_count = block_count_data['result']['count']
     
-    current_time = int(time.time())
-    block_time = block_header['timestamp']
-    time_since_last_block = current_time - block_time
-    
+    block_heights = list(range(block_count - 10, block_count))
     with ThreadPoolExecutor() as executor:
-        transactions = list(executor.map(fetch_transaction_details, block_json['tx_hashes']))
-        transactions = [tx for tx in transactions if tx is not None]
+        blocks = list(executor.map(fetch_block_header, block_heights))
     
-    return jsonify({
-        "block_count": block_count + 1,
-        "time_since_last_block": time_since_last_block,
-        "num_transactions": len(transactions),
-        "transactions": transactions
-    })
+    return jsonify({"blocks": blocks})
 
 @app.route('/get_block/<int:height>')
 def get_block(height):
