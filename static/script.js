@@ -55,12 +55,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     txLink.innerText = tx.tx_hash;
                     txHashCell.appendChild(txLink);
                     
-                    const timestampCell = document.createElement('td');
-                    if (tx.timestamp !== 'N/A') {
-                        timestampCell.innerText = new Date(tx.timestamp * 1000).toLocaleString();
-                    } else {
-                        timestampCell.innerText = 'N/A';
-                    }
+                    // Removed Timestamp Cell
 
                     const feeCell = document.createElement('td');
                     feeCell.innerText = tx.fee.toFixed(12);
@@ -69,7 +64,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     sizeCell.innerText = tx.size;
 
                     txRow.appendChild(txHashCell);
-                    txRow.appendChild(timestampCell);
+                    // Removed Timestamp Cell Append
                     txRow.appendChild(feeCell);
                     txRow.appendChild(sizeCell);
                     
@@ -79,7 +74,7 @@ document.addEventListener('DOMContentLoaded', function() {
             .catch(error => {
                 console.error('Error:', error);
                 const transactionTableBody = document.getElementById('transactionTable').querySelector('tbody');
-                transactionTableBody.innerHTML = '<tr><td colspan="4">Error loading transaction pool</td></tr>';
+                transactionTableBody.innerHTML = '<tr><td colspan="3">Error loading transaction pool</td></tr>'; // Adjusted colspan to 3
             });
     }
 
