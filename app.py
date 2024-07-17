@@ -39,6 +39,9 @@ def fetch_block_header(height):
     block_data = fetch_data("get_block_header_by_height", {"height": height})
     return block_data['result']['block_header']
 
+def fetch_info():
+    return fetch_data("get_info")
+
 @app.route('/')
 def index():
     return render_template('index.html')
@@ -46,6 +49,11 @@ def index():
 @app.route('/get_block_count')
 def get_block_count():
     data = fetch_data("get_block_count")
+    return jsonify(data)
+
+@app.route('/get_info')
+def get_info():
+    data = fetch_info()
     return jsonify(data)
 
 @app.route('/get_transaction_pool_info')

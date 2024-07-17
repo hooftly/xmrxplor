@@ -17,6 +17,29 @@ document.addEventListener('DOMContentLoaded', function() {
             });
     }
 
+    function fetchInfo() {
+        return fetch('/get_info')
+            .then(response => response.json())
+            .then(data => {
+                const networkDifficultyCard = document.getElementById('networkDifficultyCard');
+                const networkHashrateCard = document.getElementById('networkHashrateCard');
+                if (data.result) {
+                    networkDifficultyCard.innerText = `Network Difficulty: ${data.result.difficulty}`;
+                    networkHashrateCard.innerText = `Network Hashrate: ${(data.result.difficulty / data.result.target).toFixed(2)} H/s`;
+                } else {
+                    networkDifficultyCard.innerText = 'Network Difficulty: Error';
+                    networkHashrateCard.innerText = 'Network Hashrate: Error';
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                const networkDifficultyCard = document.getElementById('networkDifficultyCard');
+                const networkHashrateCard = document.getElementById('networkHashrateCard');
+                networkDifficultyCard.innerText = 'Network Difficulty: Error';
+                networkHashrateCard.innerText = 'Network Hashrate: Error';
+            });
+    }
+
     function fetchTransactionPool() {
         return fetch('/get_transaction_pool_info')
             .then(response => response.json())
@@ -98,6 +121,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function fetchAllData() {
         fetchBlockCount();
+        fetchInfo();
         fetchTransactionPool();
         fetchLatestBlocks();
     }
