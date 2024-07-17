@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Block Details</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="navbar-brand"><a href="{{ url_for('index') }}" style="color: white; text-decoration: none;">XMRXPLOR</a></div>
+    </nav>
+    <div class="container">
+        <h1>Block Details</h1>
+        <div class="block-details">
+            <h2>Block Height</h2>
+            <p>{{ block.height }}</p>
+
+            <h2>Timestamp</h2>
+            <p>{{ block.timestamp }}</p>
+
+            <h2>Size</h2>
+            <p>{{ block.block_size }} bytes</p>
+
+            <h2>Transactions</h2>
+            <ul>
+                {% for tx in block.tx_hashes %}
+                    <li><a href="{{ url_for('transaction', tx_hash=tx) }}">{{ tx }}</a></li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

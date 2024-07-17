@@ -48,26 +48,23 @@ document.addEventListener('DOMContentLoaded', function() {
                 transactionTableBody.innerHTML = '';
                 data.transactions.forEach(tx => {
                     const txRow = document.createElement('tr');
-                    
+
                     const txHashCell = document.createElement('td');
                     const txLink = document.createElement('a');
-                    txLink.href = `/transaction/${tx.tx_hash}`;
-                    txLink.innerText = tx.tx_hash;
+                    txLink.href = `/transaction/${tx.id_hash}`; // Ensure you are accessing the correct property for transaction hash
+                    txLink.innerText = tx.id_hash; // Ensure you are accessing the correct property for transaction hash
                     txHashCell.appendChild(txLink);
-                    
-                    // Removed Timestamp Cell
 
                     const feeCell = document.createElement('td');
-                    feeCell.innerText = tx.fee.toFixed(12);
+                    feeCell.innerText = (tx.fee / 1e12).toFixed(12); // Convert from atomic units to Monero
 
                     const sizeCell = document.createElement('td');
-                    sizeCell.innerText = tx.size;
+                    sizeCell.innerText = tx.blob_size; // Adjusted if size property is different
 
                     txRow.appendChild(txHashCell);
-                    // Removed Timestamp Cell Append
                     txRow.appendChild(feeCell);
                     txRow.appendChild(sizeCell);
-                    
+
                     transactionTableBody.appendChild(txRow);
                 });
             })
@@ -88,7 +85,10 @@ document.addEventListener('DOMContentLoaded', function() {
                     const blockRow = document.createElement('tr');
 
                     const heightCell = document.createElement('td');
-                    heightCell.innerText = block.height;
+                    const heightLink = document.createElement('a');
+                    heightLink.href = `/block/${block.height}`;
+                    heightLink.innerText = block.height;
+                    heightCell.appendChild(heightLink);
 
                     const timestampCell = document.createElement('td');
                     timestampCell.innerText = new Date(block.timestamp * 1000).toLocaleString();
