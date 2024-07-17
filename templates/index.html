@@ -7,11 +7,17 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
+    <nav class="navbar">
+        <div class="navbar-brand">XMRXPLOR</div>
+    </nav>
     <div class="container">
-        <h1>Monero Block Info</h1>
-        <div id="blockCountResult" class="result loading">Loading block count...</div>
-        <div id="lastBlockInfoResult" class="result loading">Loading last block info...</div>
-        <div id="averageBlockTimeResult" class="result loading">Loading average block time...</div>
+        <div class="info-cards">
+            <div id="blockHeightCard" class="info-card">Block Height: Loading...</div>
+            <div id="timeSinceLastBlockCard" class="info-card">Time Since Last Block: Loading...</div>
+            <div id="numTransactionsCard" class="info-card">Transactions in Last Block: Loading...</div>
+        </div>
+        <h1>Transaction Hashes in the Most Recent Block</h1>
+        <div id="transactionHashesResult" class="result loading">Loading transaction hashes...</div>
     </div>
     <script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>

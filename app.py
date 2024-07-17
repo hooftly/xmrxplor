@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, render_template
+from flask import Flask, jsonify, render_template, request, abort
 import requests
 import json
 import time
@@ -15,6 +15,16 @@ def fetch_data(method, params=None):
     }
     if params:
         payload["params"] = params
+    response = requests.post(url, headers=headers, data=json.dumps(payload))
+    return response.json()
+
+def fetch_transaction(tx_hash):
+    url = 'http://144.91.120.100:18081/get_transactions'
+    headers = {'Content-Type': 'application/json'}
+    payload = {
+        "txs_hashes": [tx_hash],
+        "decode_as_json": True
+    }
     response = requests.post(url, headers=headers, data=json.dumps(payload))
     return response.json()
 
@@ -44,32 +54,61 @@ def get_last_block_info():
     return jsonify({
         "block_count": block_count + 1,
         "time_since_last_block": time_since_last_block,
-        "num_transactions": num_transactions
+        "num_transactions": num_transactions,
+        "tx_hashes": block_json['tx_hashes']
     })
-
-@app.route('/get_average_block_time')
-def get_average_block_time():
-    block_count_data = fetch_data("get_block_count")
-    block_count = block_count_data['result']['count']
-    
-    timestamps = []
-    for i in range(block_count - 20, block_count):
-        block_data = fetch_data("get_block", {"height": i})
-        block_header = block_data['result']['block_header']
-        timestamps.append(block_header['timestamp'])
-    
-    if len(timestamps) < 2:
-        return jsonify({"average_block_time": None})
-    
-    time_diffs = [j - i for i, j in zip(timestamps[:-1], timestamps[1:])]
-    average_block_time = sum(time_diffs) / len(time_diffs)
-    
-    return jsonify({"average_block_time": average_block_time})
 
 @app.route('/get_block/<int:height>')
 def get_block(height):
     block_data = fetch_data("get_block", {"height": height})
     return jsonify(block_data)
+
+@app.route('/transaction/<tx_hash>')
+def transaction(tx_hash):
+    tx_data = fetch_transaction(tx_hash)
+    
+    if 'txs' not in tx_data:
+        # Log the response for debugging
+        app.logger.error(f"Transaction data fetch error: {tx_data}")
+        abort(500, description="Failed to fetch transaction data")
+    
+    # Log the entire response for debugging
+    app.logger.info(f"Transaction data: {json.dumps(tx_data, indent=2)}")
+    
+    # Parse the transaction details
+    tx_details = json.loads(tx_data['txs'][0]['as_json'])
+    
+    # Enhanced logging for vin details
+    app.logger.info(f"vin details: {json.dumps(tx_details['vin'], indent=2)}")
+    
+    vin_details = []
+    ring_size = 0
+    for vin in tx_details.get('vin', []):
+        if 'key' in vin:
+            vin_details.append({
+                'amount': vin['key'].get('amount', 'N/A'),
+                'key_image': vin['key'].get('k_image', 'N/A')
+            })
+            ring_size = max(ring_size, len(vin['key'].get('key_offsets', [])))
+    
+    vout_details = []
+    for vout in tx_details.get('vout', []):
+        vout_details.append({
+            'amount': vout.get('amount', '0'),
+            'target': {'key': vout['target']['tagged_key'].get('key', 'N/A')}
+        })
+    
+    transaction_info = {
+        'tx_hash': tx_data['txs'][0].get('tx_hash', 'N/A'),
+        'block_height': tx_data['txs'][0].get('block_height', 'N/A'),
+        'timestamp': tx_data['txs'][0].get('block_timestamp', 'N/A'),
+        'vin': vin_details,
+        'vout': vout_details,
+        'rct_signatures': tx_details.get('rct_signatures', {}),
+        'ring_size': ring_size
+    }
+    
+    return render_template('transaction.html', transaction=transaction_info)
 
 if __name__ == '__main__':
     app.run(debug=True)

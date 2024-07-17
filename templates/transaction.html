@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transaction Details</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="navbar-brand">XMRXPLOR</div>
+    </nav>
+    <div class="container">
+        <h1>Transaction Details</h1>
+        <div class="transaction-details">
+            <h2>Transaction Hash</h2>
+            <p>{{ transaction.tx_hash }}</p>
+
+            <h2>Block Height</h2>
+            <p>{{ transaction.block_height }}</p>
+
+            <h2>Timestamp</h2>
+            <p>{{ transaction.timestamp }}</p>
+
+            <h2>Inputs</h2>
+            <ul>
+                {% for input in transaction.vin %}
+                    <li>Amount: {{ input.amount }} - Key Image: {{ input.key_image }}</li>
+                {% endfor %}
+            </ul>
+
+            <h2>Outputs</h2>
+            <ul>
+                {% for output in transaction.vout %}
+                    <li>Amount: {{ output.amount }} - Public Key: {{ output.target.key }}</li>
+                {% endfor %}
+            </ul>
+
+            <h2>Other Information</h2>
+            <p>Fee: {{ transaction.rct_signatures.txnFee }}</p>
+            <p>Ring Size: {{ transaction.ring_size }}</p>
+        </div>
+    </div>
+</body>
+</html>

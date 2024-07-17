@@ -1,45 +1,97 @@
 body {
     font-family: Arial, sans-serif;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
     margin: 0;
     background-color: #f0f0f0;
 }
 
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    background-color: #333;
+    color: white;
+}
+
+.navbar-brand {
+    font-size: 24px;
+    font-weight: bold;
+}
+
 .container {
-    text-align: center;
+    text-align: left;
     padding: 20px;
     background: white;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     border-radius: 10px;
-    max-width: 600px;
-    margin: 20px;
+    max-width: 800px;
+    margin: 20px auto;
+}
+
+.info-cards {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 20px;
+}
+
+.info-card {
+    flex: 1;
+    margin: 10px;
+    padding: 15px;
+    background: #fafafa;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+    color: #333;
+    text-align: center;
 }
 
 h1 {
     color: #333;
-    margin-bottom: 20px;
+    margin-top: 10px;
 }
 
 .result {
     margin-top: 20px;
-    font-size: 18px;
+    font-size: 16px;
     color: #333;
     padding: 10px;
     border: 1px solid #ccc;
     border-radius: 5px;
     background-color: #fafafa;
-}
-
-#blockCountResult,
-#lastBlockInfoResult,
-#averageBlockTimeResult {
-    margin-bottom: 20px;
+    max-height: 400px;
+    overflow-y: auto;
 }
 
 .loading {
     font-size: 16px;
     color: #777;
+}
+
+.transaction-details {
+    margin-top: 20px;
+}
+
+.transaction-details h2 {
+    color: #333;
+    margin-top: 10px;
+}
+
+.transaction-details p, .transaction-details ul {
+    font-size: 16px;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.transaction-details ul {
+    list-style-type: none;
+    padding-left: 0;
+}
+
+.transaction-details ul li {
+    background: #fafafa;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 10px;
+    margin-bottom: 5px;
 }
