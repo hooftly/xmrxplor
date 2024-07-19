@@ -12,6 +12,7 @@
     </nav>
     <div class="container">
         <h1>Block Details</h1>
+        {% if block %}
         <div class="block-details">
             <h2>Block Height</h2>
             <p>{{ block.height }}</p>
@@ -25,10 +26,13 @@
             <h2>Transactions</h2>
             <ul>
                 {% for tx in block.tx_hashes %}
-                    <li><a href="{{ url_for('transaction', tx_hash=tx) }}">{{ tx }}</a></li>
+                    <li><a href="{{ url_for('transaction_details', tx_hash=tx) }}">{{ tx }}</a></li>
                 {% endfor %}
             </ul>
         </div>
+        {% else %}
+        <p>{{ error }}</p>
+        {% endif %}
     </div>
 </body>
 </html>

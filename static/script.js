@@ -46,32 +46,36 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(data => {
                 const transactionTableBody = document.getElementById('transactionTable').querySelector('tbody');
                 transactionTableBody.innerHTML = '';
-                data.transactions.forEach(tx => {
-                    const txRow = document.createElement('tr');
+                if (data.transactions && data.transactions.length > 0) {
+                    data.transactions.forEach(tx => {
+                        const txRow = document.createElement('tr');
 
-                    const txHashCell = document.createElement('td');
-                    const txLink = document.createElement('a');
-                    txLink.href = `/transaction/${tx.id_hash}`; // Ensure you are accessing the correct property for transaction hash
-                    txLink.innerText = tx.id_hash; // Ensure you are accessing the correct property for transaction hash
-                    txHashCell.appendChild(txLink);
+                        const txHashCell = document.createElement('td');
+                        const txLink = document.createElement('a');
+                        txLink.href = `/transaction/${tx.id_hash}`;
+                        txLink.innerText = tx.id_hash;
+                        txHashCell.appendChild(txLink);
 
-                    const feeCell = document.createElement('td');
-                    feeCell.innerText = (tx.fee / 1e12).toFixed(12); // Convert from atomic units to Monero
+                        const feeCell = document.createElement('td');
+                        feeCell.innerText = (tx.fee / 1e12).toFixed(12);
 
-                    const sizeCell = document.createElement('td');
-                    sizeCell.innerText = tx.blob_size; // Adjusted if size property is different
+                        const sizeCell = document.createElement('td');
+                        sizeCell.innerText = tx.blob_size;
 
-                    txRow.appendChild(txHashCell);
-                    txRow.appendChild(feeCell);
-                    txRow.appendChild(sizeCell);
+                        txRow.appendChild(txHashCell);
+                        txRow.appendChild(feeCell);
+                        txRow.appendChild(sizeCell);
 
-                    transactionTableBody.appendChild(txRow);
-                });
+                        transactionTableBody.appendChild(txRow);
+                    });
+                } else {
+                    transactionTableBody.innerHTML = '<tr><td colspan="3">No transactions available</td></tr>';
+                }
             })
             .catch(error => {
                 console.error('Error:', error);
                 const transactionTableBody = document.getElementById('transactionTable').querySelector('tbody');
-                transactionTableBody.innerHTML = '<tr><td colspan="3">Error loading transaction pool</td></tr>'; // Adjusted colspan to 3
+                transactionTableBody.innerHTML = '<tr><td colspan="3">Error loading transaction pool</td></tr>';
             });
     }
 
@@ -81,31 +85,35 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(data => {
                 const blocksTableBody = document.getElementById('blocksTable').querySelector('tbody');
                 blocksTableBody.innerHTML = '';
-                data.blocks.forEach(block => {
-                    const blockRow = document.createElement('tr');
+                if (data.blocks && data.blocks.length > 0) {
+                    data.blocks.forEach(block => {
+                        const blockRow = document.createElement('tr');
 
-                    const heightCell = document.createElement('td');
-                    const heightLink = document.createElement('a');
-                    heightLink.href = `/block/${block.height}`;
-                    heightLink.innerText = block.height;
-                    heightCell.appendChild(heightLink);
+                        const heightCell = document.createElement('td');
+                        const heightLink = document.createElement('a');
+                        heightLink.href = `/block/${block.height}`;
+                        heightLink.innerText = block.height;
+                        heightCell.appendChild(heightLink);
 
-                    const timestampCell = document.createElement('td');
-                    timestampCell.innerText = new Date(block.timestamp * 1000).toLocaleString();
+                        const timestampCell = document.createElement('td');
+                        timestampCell.innerText = new Date(block.timestamp * 1000).toLocaleString();
 
-                    const sizeCell = document.createElement('td');
-                    sizeCell.innerText = block.block_size;
+                        const sizeCell = document.createElement('td');
+                        sizeCell.innerText = block.block_size;
 
-                    const txCountCell = document.createElement('td');
-                    txCountCell.innerText = block.num_txes;
+                        const txCountCell = document.createElement('td');
+                        txCountCell.innerText = block.num_txes;
 
-                    blockRow.appendChild(heightCell);
-                    blockRow.appendChild(timestampCell);
-                    blockRow.appendChild(sizeCell);
-                    blockRow.appendChild(txCountCell);
+                        blockRow.appendChild(heightCell);
+                        blockRow.appendChild(timestampCell);
+                        blockRow.appendChild(sizeCell);
+                        blockRow.appendChild(txCountCell);
 
-                    blocksTableBody.appendChild(blockRow);
-                });
+                        blocksTableBody.appendChild(blockRow);
+                    });
+                } else {
+                    blocksTableBody.innerHTML = '<tr><td colspan="4">No blocks available</td></tr>';
+                }
             })
             .catch(error => {
                 console.error('Error:', error);
@@ -121,13 +129,10 @@ document.addEventListener('DOMContentLoaded', function() {
         fetchLatestBlocks();
     }
 
-    // Fetch all data when the page loads
     fetchAllData();
 
-    // Set up an interval to refresh the data every 25 seconds
     setInterval(fetchAllData, 25000);
 
-    // Add event listener for search form
     const searchForm = document.getElementById('searchForm');
     searchForm.addEventListener('submit', function(event) {
         event.preventDefault();
